@@ -265,9 +265,65 @@
     </div>
     
     <!-- Background Music -->
-    <audio id="bgMusic" loop autoplay>
+    <audio id="bgMusic" loop preload="auto" style="display: none;">
         <source src="music/song.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
     </audio>
+    
+    <!-- Music Prompt -->
+    <div id="musicPrompt" style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(0,0,0,0.85);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        z-index: 10000;
+        backdrop-filter: blur(10px);
+        border: 2px solid #ffd700;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        cursor: pointer;
+        font-family: 'Cormorant Garamond', serif;
+        display: none;
+        max-width: 250px;
+    ">
+        <div style="font-weight: bold; margin-bottom: 5px; font-size: 1.1rem;">🎵 Click to enable background music</div>
+        <div style="font-size: 0.9rem; opacity: 0.8;">(Recommended for full experience)</div>
+    </div>
+    
+    <!-- Volume Control -->
+    <div id="volumeControl" style="
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 10000;
+        background: rgba(0,0,0,0.7);
+        padding: 10px 15px;
+        border-radius: 50px;
+        backdrop-filter: blur(5px);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid rgba(255,255,255,0.2);
+        opacity: 0;
+        transition: opacity 0.3s;
+    ">
+        <button id="muteBtn" style="
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            min-width: 40px;
+            text-align: center;
+        ">🔊</button>
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.3" style="
+            width: 80px;
+            cursor: pointer;
+        ">
+    </div>
     
     <div class="container">
         <div class="ribbon-container">
@@ -318,20 +374,119 @@
     <script>
         const tl = gsap.timeline();
         
+        // Background animations
         gsap.to('.gradient-bg', { backgroundPosition: '400% 400%', duration: 15, repeat: -1, yoyo: true, ease: 'sine.inOut' });
         gsap.to('.orb1', { x: 100, y: -50, scale: 1.2, duration: 8, repeat: -1, yoyo: true, ease: 'sine.inOut' });
         gsap.to('.orb2', { x: -80, y: 60, scale: 1.3, duration: 10, repeat: -1, yoyo: true, ease: 'sine.inOut' });
         gsap.to('.orb3', { scale: 1.5, opacity: 0.6, duration: 6, repeat: -1, yoyo: true, ease: 'sine.inOut' });
         
+        // Initial page animations
         tl.from('.title', { duration: 1.2, y: -100, opacity: 0, scale: 0.5, ease: 'elastic.out(1, 0.5)' })
           .from('.subtitle', { duration: 0.8, y: 30, opacity: 0, ease: 'power2.out' }, '-=0.6')
           .from('.event-details', { duration: 1, scale: 0.8, opacity: 0, rotationY: 90, ease: 'back.out(1.7)' }, '-=0.4')
           .from('.inaugurate-btn', { duration: 0.8, scale: 0, opacity: 0, ease: 'back.out(1.7)' }, '-=0.4')
           .from('.ribbon-container', { duration: 1, scaleX: 0, opacity: 0, ease: 'power2.out' }, '-=0.6');
         
+        // Continuous animations
         gsap.to('.title', { backgroundPosition: '200% 0', duration: 3, repeat: -1, ease: 'none' });
         gsap.to('.ribbon-center', { scale: 1.1, boxShadow: '0 0 50px rgba(255, 215, 0, 1)', duration: 1.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
         
+        // Audio setup
+        const music = document.getElementById('bgMusic');
+        const musicPrompt = document.getElementById('musicPrompt');
+        const volumeControl = document.getElementById('volumeControl');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const muteBtn = document.getElementById('muteBtn');
+        let audioStarted = false;
+        
+        // Set initial volume
+        music.volume = 0.3;
+        
+        // Function to start audio
+        function startAudio() {
+            if (!audioStarted) {
+                music.play()
+                    .then(() => {
+                        console.log("Audio started successfully");
+                        audioStarted = true;
+                        musicPrompt.style.display = 'none';
+                        gsap.to(volumeControl, { opacity: 1, duration: 0.5 });
+                    })
+                    .catch(error => {
+                        console.log("Audio play failed:", error);
+                        showMusicPrompt();
+                    });
+            }
+        }
+        
+        // Show music prompt
+        function showMusicPrompt() {
+            musicPrompt.style.display = 'block';
+            gsap.from(musicPrompt, {
+                opacity: 0,
+                y: -20,
+                duration: 0.5,
+                ease: 'power2.out'
+            });
+            
+            // Auto-hide after 15 seconds
+            setTimeout(() => {
+                if (musicPrompt.style.display === 'block') {
+                    gsap.to(musicPrompt, {
+                        opacity: 0,
+                        y: -20,
+                        duration: 0.5,
+                        onComplete: () => {
+                            musicPrompt.style.display = 'none';
+                        }
+                    });
+                }
+            }, 15000);
+        }
+        
+        // Volume control
+        volumeSlider.addEventListener('input', function(e) {
+            music.volume = parseFloat(e.target.value);
+            muteBtn.textContent = e.target.value == 0 ? '🔇' : '🔊';
+        });
+        
+        muteBtn.addEventListener('click', function() {
+            if (music.volume > 0) {
+                music.volume = 0;
+                this.textContent = '🔇';
+                volumeSlider.value = 0;
+            } else {
+                music.volume = 0.3;
+                this.textContent = '🔊';
+                volumeSlider.value = 0.3;
+            }
+        });
+        
+        // Try to autoplay immediately
+        setTimeout(() => {
+            startAudio();
+        }, 1000);
+        
+        // Show music prompt if audio hasn't started after 3 seconds
+        setTimeout(() => {
+            if (!audioStarted && music.paused) {
+                showMusicPrompt();
+            }
+        }, 3000);
+        
+        // Click handlers for audio
+        musicPrompt.addEventListener('click', startAudio);
+        
+        // Also try to start audio on any page interaction
+        ['click', 'touchstart'].forEach(event => {
+            document.addEventListener(event, () => {
+                if (!audioStarted) {
+                    startAudio();
+                }
+            }, { once: true });
+        });
+        
+        // Create sparkles
         function createSparkles() {
             setInterval(() => {
                 const s = document.createElement('div');
@@ -345,6 +500,7 @@
             }, 200);
         }
         
+        // Create particles
         function createParticles() {
             const c = document.getElementById('particles');
             for (let i = 0; i < 30; i++) {
@@ -360,6 +516,7 @@
             }
         }
         
+        // Create confetti
         function createConfetti() {
             const cols = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#f7b731', '#ff9ff3'];
             for (let i = 0; i < 100; i++) {
@@ -376,6 +533,7 @@
             }
         }
         
+        // Create fireworks
         function createFirework(x, y) {
             const cols = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#f7b731'];
             for (let i = 0; i < 30; i++) {
@@ -390,6 +548,7 @@
             }
         }
         
+        // Cut ribbons animation
         function cutRibbons() {
             const sc = document.getElementById('scissors');
             const rl = document.getElementById('ribbonLeft'), rr = document.getElementById('ribbonRight'), rc = document.getElementById('ribbonCenter');
@@ -424,9 +583,15 @@
             }, 600);
         }
         
+        // Inaugurate button handler
         document.getElementById('inaugurateBtn').addEventListener('click', function() {
+            // Ensure audio starts
+            startAudio();
+            
+            // Button animation
             gsap.to(this, { scale: 0.9, duration: 0.1, yoyo: true, repeat: 1, ease: 'power2.inOut' });
             
+            // Show countdown
             const co = document.getElementById('countdownOverlay'), cn = document.getElementById('countdownNumber');
             co.classList.add('active');
             gsap.from(co, { opacity: 0, duration: 0.3, ease: 'power2.out' });
@@ -449,6 +614,7 @@
             }, 1000);
         });
         
+        // Main inauguration function
         function startInauguration() {
             cutRibbons();
             gsap.to('#preInauguration', { opacity: 0, scale: 0.8, duration: 0.8, delay: 1.2, onComplete: () => document.getElementById('preInauguration').style.display = 'none' });
@@ -464,29 +630,41 @@
                 gsap.to('.celebration-title', { textShadow: '0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 215, 0, 0.5)', duration: 1, repeat: -1, yoyo: true, ease: 'sine.inOut' });
                 gsap.to('.celebration-content', { scale: 1.02, duration: 2, repeat: -1, yoyo: true, ease: 'sine.inOut' });
                 
+                // Create multiple fireworks
                 setTimeout(() => createFirework(window.innerWidth / 2, window.innerHeight / 3), 200);
                 setTimeout(() => createFirework(window.innerWidth / 4, window.innerHeight / 2), 500);
                 setTimeout(() => createFirework(3 * window.innerWidth / 4, window.innerHeight / 2), 800);
                 setTimeout(() => createFirework(window.innerWidth / 2, window.innerHeight / 2.5), 1100);
                 
+                // Create confetti
                 createConfetti();
                 setTimeout(createConfetti, 2000);
+                setTimeout(createConfetti, 4000);
+                
+                // Make sure audio is playing
+                if (!audioStarted) {
+                    startAudio();
+                }
             }, 1500);
         }
         
+        // Initialize effects
         createParticles();
         createSparkles();
         
-        // Auto-play music on page load
-        const music = document.getElementById('bgMusic');
-        
-        // Try to autoplay
-        music.play().catch(() => {
-            // If autoplay fails (browser policy), play on first user interaction
-            document.body.addEventListener('click', function() {
-                music.play();
-            }, { once: true });
-        });
+        // Hide music prompt after 20 seconds if still visible
+        setTimeout(() => {
+            if (musicPrompt.style.display === 'block') {
+                gsap.to(musicPrompt, {
+                    opacity: 0,
+                    y: -20,
+                    duration: 0.5,
+                    onComplete: () => {
+                        musicPrompt.style.display = 'none';
+                    }
+                });
+            }
+        }, 20000);
     </script>
 </body>
 </html>
