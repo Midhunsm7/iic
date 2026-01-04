@@ -182,32 +182,6 @@
         .inaugurate-btn:hover:before { width: 300px; height: 300px; }
         .inaugurate-btn span { position: relative; z-index: 1; }
         
-        .music-control {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-        
-        .music-control:hover {
-            transform: scale(1.1);
-            background: white;
-        }
-        
-        .music-control span {
-            font-size: 1.5rem;
-        }
-        
         .countdown-overlay {
             position: fixed;
             top: 0;
@@ -290,14 +264,9 @@
         <div class="orb orb3"></div>
     </div>
     
-    <!-- Music Control -->
-    <div class="music-control" id="musicControl" title="Toggle Music">
-        <span id="musicIcon">🔇</span>
-    </div>
-    
     <!-- Background Music -->
-    <audio id="bgMusic" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2022/03/10/audio_4a46e0c3a5.mp3" type="audio/mpeg">
+    <audio id="bgMusic" loop autoplay>
+        <source src="music/song.mp3" type="audio/mpeg">
     </audio>
     
     <div class="container">
@@ -333,7 +302,7 @@
                 </div>
             </div>
             
-            <button class="inaugurate-btn" id="inaugurateBtn"><span>✨ INAUGURATED ✨</span></button>
+            <button class="inaugurate-btn" id="inaugurateBtn"><span>✨ INAUGURATE ✨</span></button>
         </div>
         
         <div class="post-inauguration" id="postInauguration">
@@ -508,35 +477,16 @@
         createParticles();
         createSparkles();
         
-        // Music control
+        // Auto-play music on page load
         const music = document.getElementById('bgMusic');
-        const musicControl = document.getElementById('musicControl');
-        const musicIcon = document.getElementById('musicIcon');
-        let isPlaying = false;
         
-        musicControl.addEventListener('click', function() {
-            if (isPlaying) {
-                music.pause();
-                musicIcon.textContent = '🔇';
-                gsap.to(musicControl, { rotation: 0, duration: 0.3 });
-            } else {
+        // Try to autoplay
+        music.play().catch(() => {
+            // If autoplay fails (browser policy), play on first user interaction
+            document.body.addEventListener('click', function() {
                 music.play();
-                musicIcon.textContent = '🔊';
-                gsap.to(musicControl, { rotation: 360, duration: 0.5 });
-            }
-            isPlaying = !isPlaying;
+            }, { once: true });
         });
-        
-        // Auto-start music on first user interaction
-        document.body.addEventListener('click', function startMusic() {
-            if (!isPlaying) {
-                music.play().then(() => {
-                    isPlaying = true;
-                    musicIcon.textContent = '🔊';
-                }).catch(() => {});
-            }
-            document.body.removeEventListener('click', startMusic);
-        }, { once: true });
     </script>
 </body>
 </html>
