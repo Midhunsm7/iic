@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Up Series - Inauguration</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Cormorant+Garamond:wght@300;400;600&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 400% 400%;
+            z-index: 0;
+        }
+        
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        
+        .orb1 { width: 300px; height: 300px; background: radial-gradient(circle, #ff6b6b, transparent); top: 20%; left: 10%; }
+        .orb2 { width: 400px; height: 400px; background: radial-gradient(circle, #4ecdc4, transparent); bottom: 10%; right: 10%; }
+        .orb3 { width: 250px; height: 250px; background: radial-gradient(circle, #ffd700, transparent); top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        
+        .container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .ribbon-container {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            pointer-events: none;
+            overflow: visible;
+            z-index: 5;
+            transform: translateY(-50%);
+        }
+        
+        .ribbon { position: absolute; width: 100%; height: 80px; display: flex; align-items: center; }
+        .ribbon-left { left: 0; }
+        .ribbon-right { right: 0; }
+        .ribbon-band { height: 80px; position: relative; }
+        
+        .ribbon-left .ribbon-band {
+            width: 50%;
+            background: linear-gradient(180deg, #ff6b6b 0%, #ee5a6f 50%, #ff6b6b 100%);
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.6);
+            clip-path: polygon(0 0, 100% 0, 95% 50%, 100% 100%, 0 100%);
+        }
+        
+        .ribbon-right .ribbon-band {
+            width: 50%;
+            background: linear-gradient(180deg, #4ecdc4 0%, #44a8a8 50%, #4ecdc4 100%);
+            box-shadow: 0 5px 20px rgba(78, 205, 196, 0.6);
+            clip-path: polygon(5% 0, 100% 0, 100% 100%, 0 100%, 5% 50%);
+            margin-left: auto;
+        }
+        
+        .ribbon-center {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .ribbon-center::before { content: '🎀'; font-size: 3rem; }
+        
+        .particle { position: absolute; background: rgba(255, 255, 255, 0.3); border-radius: 50%; }
+        
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 10px white;
+        }
+        
+        .pre-inauguration { text-align: center; z-index: 10; max-width: 700px; }
+        
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 15px;
+            letter-spacing: 4px;
+            background: linear-gradient(45deg, #fff, #f0e68c, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+        }
+        
+        .subtitle { font-size: 1.3rem; color: rgba(255, 255, 255, 0.9); margin-bottom: 40px; font-weight: 300; letter-spacing: 2px; }
+        
+        .event-details {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 35px 50px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .event-details h2 { font-size: 1.8rem; color: #000; margin-bottom: 8px; font-weight: 900; }
+        .event-details h3 { font-size: 1.1rem; color: #333; margin-bottom: 25px; font-weight: 600; font-style: italic; }
+        .event-details p { font-size: 1.1rem; color: #000; line-height: 1.6; margin-bottom: 8px; font-weight: 700; }
+        
+        .languages { display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap; }
+        .lang-tag { background: rgba(255, 255, 255, 0.2); padding: 6px 16px; border-radius: 20px; font-size: 0.95rem; border: 1px solid rgba(255, 255, 255, 0.3); }
+        
+        .inaugurate-btn {
+            padding: 20px 60px;
+            font-size: 1.5rem;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: #667eea;
+            background: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            pointer-events: auto;
+        }
+        
+        .inaugurate-btn:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .inaugurate-btn:hover:before { width: 300px; height: 300px; }
+        .inaugurate-btn span { position: relative; z-index: 1; }
+        
+        .countdown-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .countdown-overlay.active { display: flex; }
+        
+        .countdown-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 15rem;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 50px rgba(255, 215, 0, 0.8), 0 0 100px rgba(255, 215, 0, 0.5);
+        }
+        
+        .countdown-text { position: absolute; bottom: 30%; font-size: 2rem; color: white; font-weight: 300; letter-spacing: 3px; }
+        
+        .scissors { position: absolute; font-size: 4rem; z-index: 100; opacity: 0; pointer-events: none; filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3)); }
+        
+        .post-inauguration { display: none; text-align: center; z-index: 10; max-width: 700px; }
+        .post-inauguration.active { display: block; }
+        
+        .celebration-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3);
+            margin-bottom: 30px;
+        }
+        
+        .celebration-content {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            padding: 45px 60px;
+            border-radius: 25px;
+            border: 3px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+        }
+        
+        .celebration-content h3 { font-size: 2rem; color: white; margin-bottom: 20px; font-weight: 600; }
+        .celebration-content p { font-size: 1.2rem; color: rgba(255, 255, 255, 0.95); line-height: 1.8; margin-bottom: 12px; }
+        
+        .confetti { position: absolute; width: 10px; height: 10px; }
+        .firework { position: absolute; width: 4px; height: 4px; border-radius: 50%; }
+        .ribbon-piece { position: absolute; height: 80px; pointer-events: none; z-index: 5; }
+        
+        .ribbon-piece-left {
+            background: linear-gradient(180deg, #ff6b6b 0%, #ee5a6f 50%, #ff6b6b 100%);
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.6);
+        }
+        
+        .ribbon-piece-right {
+            background: linear-gradient(180deg, #4ecdc4 0%, #44a8a8 50%, #4ecdc4 100%);
+            box-shadow: 0 5px 20px rgba(78, 205, 196, 0.6);
+        }
+        
+        @media (max-width: 768px) {
+            .title { font-size: 2.5rem; }
+            .subtitle { font-size: 1rem; }
+            .event-details { padding: 25px 35px; }
+            .celebration-title { font-size: 2.5rem; }
+            .countdown-number { font-size: 8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="gradient-bg">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="orb orb3"></div>
+    </div>
+    
+    <div class="container">
+        <div class="ribbon-container">
+            <div class="ribbon ribbon-left"><div class="ribbon-band" id="ribbonLeft"></div></div>
+            <div class="ribbon ribbon-right"><div class="ribbon-band" id="ribbonRight"></div></div>
+            <div class="ribbon-center" id="ribbonCenter"></div>
+        </div>
+        
+        <div class="scissors" id="scissors">✂️</div>
+        
+        <div class="countdown-overlay" id="countdownOverlay">
+            <div class="countdown-number" id="countdownNumber">5</div>
+            <div class="countdown-text">Inaugurating in...</div>
+        </div>
+        
+        <div id="particles"></div>
+        
+        <div class="pre-inauguration" id="preInauguration">
+            <h1 class="title">SKILL UP SERIES</h1>
+            <p class="subtitle">Skill Development Hub — CUSAT</p>
+            
+            <div class="event-details">
+                <h2>Competitive Coding Program</h2>
+                <h3>Skill Training Workshop</h3>
+                <p>📅 5th, 6th & 7th January 2026</p>
+                <p>📍 SDPK Centre, CUSAT</p>
+                
+            </div>
+            
+            <button class="inaugurate-btn" id="inaugurateBtn"><span>✨ INAUGURATE ✨</span></button>
+        </div>
+        
+        <div class="post-inauguration" id="postInauguration">
+            <h1 class="celebration-title">🎊 INAUGURATED! 🎊</h1>
+            <div class="celebration-content">
+                <h3>Workshop Begins!</h3>
+                <p>The Competitive Coding Program is now officially inaugurated.</p>
+                <p style="margin-top: 25px; font-size: 1.3rem; color: #ffd700;"><strong>Let the learning begin! 🚀</strong></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const tl = gsap.timeline();
+        
+        gsap.to('.gradient-bg', { backgroundPosition: '400% 400%', duration: 15, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        gsap.to('.orb1', { x: 100, y: -50, scale: 1.2, duration: 8, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        gsap.to('.orb2', { x: -80, y: 60, scale: 1.3, duration: 10, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        gsap.to('.orb3', { scale: 1.5, opacity: 0.6, duration: 6, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        
+        tl.from('.title', { duration: 1.2, y: -100, opacity: 0, scale: 0.5, ease: 'elastic.out(1, 0.5)' })
+          .from('.subtitle', { duration: 0.8, y: 30, opacity: 0, ease: 'power2.out' }, '-=0.6')
+          .from('.event-details', { duration: 1, scale: 0.8, opacity: 0, rotationY: 90, ease: 'back.out(1.7)' }, '-=0.4')
+          .from('.inaugurate-btn', { duration: 0.8, scale: 0, opacity: 0, ease: 'back.out(1.7)' }, '-=0.4')
+          .from('.ribbon-container', { duration: 1, scaleX: 0, opacity: 0, ease: 'power2.out' }, '-=0.6');
+        
+        gsap.to('.title', { backgroundPosition: '200% 0', duration: 3, repeat: -1, ease: 'none' });
+        gsap.to('.ribbon-center', { scale: 1.1, boxShadow: '0 0 50px rgba(255, 215, 0, 1)', duration: 1.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        
+        function createSparkles() {
+            setInterval(() => {
+                const s = document.createElement('div');
+                s.className = 'sparkle';
+                const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+                const a = Math.random() * Math.PI * 2, d = 70 + Math.random() * 30;
+                s.style.left = cx + Math.cos(a) * d + 'px';
+                s.style.top = cy + Math.sin(a) * d + 'px';
+                document.body.appendChild(s);
+                gsap.to(s, { scale: 0, opacity: 0, duration: 0.8, ease: 'power2.out', onComplete: () => s.remove() });
+            }, 200);
+        }
+        
+        function createParticles() {
+            const c = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const sz = Math.random() * 10 + 5;
+                p.style.width = sz + 'px';
+                p.style.height = sz + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                c.appendChild(p);
+                gsap.to(p, { y: Math.random() * -40 - 20, x: Math.random() * 20 - 10, duration: Math.random() * 3 + 4, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: Math.random() * 3 });
+            }
+        }
+        
+        function createConfetti() {
+            const cols = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#f7b731', '#ff9ff3'];
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const c = document.createElement('div');
+                    c.className = 'confetti';
+                    c.style.left = Math.random() * 100 + '%';
+                    c.style.top = '-10px';
+                    c.style.background = cols[Math.floor(Math.random() * cols.length)];
+                    c.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    document.body.appendChild(c);
+                    gsap.to(c, { y: window.innerHeight + 100, rotation: Math.random() * 720 - 360, x: Math.random() * 200 - 100, duration: Math.random() * 2 + 2, ease: 'power1.in', onComplete: () => c.remove() });
+                }, i * 30);
+            }
+        }
+        
+        function createFirework(x, y) {
+            const cols = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#f7b731'];
+            for (let i = 0; i < 30; i++) {
+                const f = document.createElement('div');
+                f.className = 'firework';
+                f.style.left = x + 'px';
+                f.style.top = y + 'px';
+                f.style.background = cols[Math.floor(Math.random() * cols.length)];
+                document.body.appendChild(f);
+                const a = (Math.PI * 2 * i) / 30, d = Math.random() * 150 + 80;
+                gsap.to(f, { x: Math.cos(a) * d, y: Math.sin(a) * d, opacity: 0, scale: 0, duration: 1, ease: 'power2.out', onComplete: () => f.remove() });
+            }
+        }
+        
+        function cutRibbons() {
+            const sc = document.getElementById('scissors');
+            const rl = document.getElementById('ribbonLeft'), rr = document.getElementById('ribbonRight'), rc = document.getElementById('ribbonCenter');
+            const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+            
+            const stl = gsap.timeline();
+            stl.set(sc, { x: cx + 60, y: cy - 60, opacity: 1, rotation: 45 })
+               .to(sc, { x: cx - 20, y: cy, rotation: 90, duration: 0.6, ease: 'power2.in' })
+               .to(sc, { rotation: 135, duration: 0.15, ease: 'power2.inOut' })
+               .to(sc, { x: cx - 100, y: cy + 60, opacity: 0, duration: 0.4, ease: 'power2.in' });
+            
+            setTimeout(() => {
+                gsap.to(rc, { scale: 0, rotation: 360, opacity: 0, duration: 0.5, ease: 'power2.in' });
+                
+                const rpl = document.createElement('div');
+                rpl.className = 'ribbon-piece ribbon-piece-left';
+                rpl.style.width = '50%';
+                rpl.style.left = '0';
+                rpl.style.top = cy - 40 + 'px';
+                document.body.appendChild(rpl);
+                
+                const rpr = document.createElement('div');
+                rpr.className = 'ribbon-piece ribbon-piece-right';
+                rpr.style.width = '50%';
+                rpr.style.right = '0';
+                rpr.style.top = cy - 40 + 'px';
+                document.body.appendChild(rpr);
+                
+                gsap.to([rl, rr], { opacity: 0, duration: 0.2 });
+                gsap.to(rpl, { y: window.innerHeight, rotation: -90, x: -300, duration: 1.5, ease: 'power2.in' });
+                gsap.to(rpr, { y: window.innerHeight, rotation: 90, x: 300, duration: 1.5, ease: 'power2.in' });
+            }, 600);
+        }
+        
+        document.getElementById('inaugurateBtn').addEventListener('click', function() {
+            gsap.to(this, { scale: 0.9, duration: 0.1, yoyo: true, repeat: 1, ease: 'power2.inOut' });
+            
+            const co = document.getElementById('countdownOverlay'), cn = document.getElementById('countdownNumber');
+            co.classList.add('active');
+            gsap.from(co, { opacity: 0, duration: 0.3, ease: 'power2.out' });
+            
+            let c = 5;
+            cn.textContent = c;
+            gsap.from(cn, { scale: 0, rotation: -180, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
+            
+            const ci = setInterval(() => {
+                c--;
+                if (c > 0) {
+                    cn.textContent = c;
+                    gsap.fromTo(cn, { scale: 1.5, rotation: 360, opacity: 0 }, { scale: 1, rotation: 0, opacity: 1, duration: 0.5, ease: 'back.out(1.7)' });
+                    gsap.to(cn, { textShadow: '0 0 80px rgba(255, 215, 0, 1), 0 0 120px rgba(255, 215, 0, 0.8)', duration: 0.2, yoyo: true, repeat: 1 });
+                } else {
+                    clearInterval(ci);
+                    gsap.to(cn, { scale: 3, opacity: 0, rotation: 720, duration: 0.5, ease: 'power2.in' });
+                    gsap.to(co, { opacity: 0, duration: 0.5, delay: 0.3, onComplete: () => { co.classList.remove('active'); startInauguration(); }});
+                }
+            }, 1000);
+        });
+        
+        function startInauguration() {
+            cutRibbons();
+            gsap.to('#preInauguration', { opacity: 0, scale: 0.8, duration: 0.8, delay: 1.2, onComplete: () => document.getElementById('preInauguration').style.display = 'none' });
+            
+            setTimeout(() => {
+                const pi = document.getElementById('postInauguration');
+                pi.classList.add('active');
+                
+                const ctl = gsap.timeline();
+                ctl.from('.celebration-title', { scale: 0.5, rotation: -20, opacity: 0, duration: 1, ease: 'elastic.out(1, 0.5)' })
+                   .from('.celebration-content', { scale: 0.8, opacity: 0, y: 50, duration: 0.8, ease: 'back.out(1.7)' }, '-=0.5');
+                
+                gsap.to('.celebration-title', { textShadow: '0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 215, 0, 0.5)', duration: 1, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+                gsap.to('.celebration-content', { scale: 1.02, duration: 2, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+                
+                setTimeout(() => createFirework(window.innerWidth / 2, window.innerHeight / 3), 200);
+                setTimeout(() => createFirework(window.innerWidth / 4, window.innerHeight / 2), 500);
+                setTimeout(() => createFirework(3 * window.innerWidth / 4, window.innerHeight / 2), 800);
+                setTimeout(() => createFirework(window.innerWidth / 2, window.innerHeight / 2.5), 1100);
+                
+                createConfetti();
+                setTimeout(createConfetti, 2000);
+            }, 1500);
+        }
+        
+        createParticles();
+        createSparkles();
+    </script>
+</body>
+</html>
